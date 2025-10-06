@@ -1,4 +1,3 @@
-// src/types.ts
 export type MasterRow = {
   id: number;
   level: 1 | 2 | 3 | 4;
@@ -6,12 +5,12 @@ export type MasterRow = {
   type: 'letter' | 'cv' | 'word' | 'cvc' | 'digraph_word' | 'mixed';
   en: string;
   ko: string;
-  primary: string; // 주요 그래핌/규칙 키 (예: 'sh', 'th_vd', 'silent_e' 등)
-  conf_groups: string[]; // 혼동세트 그룹명들
+  primary: string;
+  conf_groups: string[];
   tts_en_text: string;
   tts_ko_text: string;
-  tts_en_lang: string; // 'en-US'
-  tts_ko_lang: string; // 'ko-KR'
+  tts_en_lang: string;
+  tts_ko_lang: string;
   audio_en_prompt: string;
   audio_ko_prompt: string;
   audio_en_answer: string;
