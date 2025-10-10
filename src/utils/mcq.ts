@@ -40,6 +40,13 @@ function pickNeighbors(
     shuffle(fb);
     out.push(...fb.slice(0, k - out.length));
   }
+  if (out.length < k) {
+    const fb = master.filter(
+      (r) => r.id !== row.id && !seen.has((r as any)[key])
+    );
+    shuffle(fb);
+    out.push(...fb.slice(0, k - out.length));
+  }
   return out.slice(0, k);
 }
 
