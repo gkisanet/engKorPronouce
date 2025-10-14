@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import { Volume2, Mic, MicOff, Star } from "lucide-react"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
 
 export type QuizItem = {
     qid: string
@@ -78,13 +81,13 @@ const useSTT = (opts?: { lang?: string }) => {
 }
 
 const LevelBadge = ({ tag }: { tag: string }) => {
-    const colors: Record<string, string> = {
-        L1: "bg-green-200 text-green-800",
-        L2: "bg-sky-200 text-sky-800",
-        L3: "bg-purple-200 text-purple-800",
-        L4: "bg-orange-200 text-orange-800",
+    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+        L1: "default",
+        L2: "secondary",
+        L3: "destructive",
+        L4: "outline",
     }
-    return <span className={`px-3 py-1 rounded-full text-xs font-semibold ${colors[tag]}`}>{tag}</span>
+    return <Badge variant={variants[tag]}>{tag}</Badge>
 }
 
 const ChoiceButton = ({ text, index, selectedIdx, correctIdx, onSelect }: any) => {
@@ -92,18 +95,20 @@ const ChoiceButton = ({ text, index, selectedIdx, correctIdx, onSelect }: any) =
     const isCorrect = selectedIdx !== null && index === correctIdx
     const isWrong = selectedIdx !== null && isSelected && index !== correctIdx
 
+    const getVariant = () => {
+        if (isCorrect) return "default"
+        if (isWrong) return "destructive"
+        if (isSelected) return "secondary"
+        return "outline"
+    }
+
     return (
         <motion.button
             whileTap={{ scale: 0.95 }}
-            className={`w-full rounded-2xl border-4 p-4 text-lg font-semibold shadow transition-all duration-300 ${isCorrect
-                    ? "bg-green-300 border-green-400 text-green-900"
-                    : isWrong
-                        ? "bg-red-300 border-red-400 text-red-900"
-                        : "bg-yellow-100 border-yellow-200 hover:bg-yellow-200"
-                }`}
+            className={cn(buttonVariants({ variant: getVariant(), className: "w-full h-auto p-4 text-lg font-semibold justify-start" }))}
             onClick={() => onSelect(index)}
         >
-            <span className="mr-2 text-xl">{"ABCD"[index]}</span>
+            <span className="mr-2 text-xl">{["1번", "2번", "3번", "4번"][index]}</span>
             {text}
         </motion.button>
     )
@@ -112,12 +117,9 @@ const ChoiceButton = ({ text, index, selectedIdx, correctIdx, onSelect }: any) =
 const TTSButton = ({ text, lang, label }: any) => {
     const { speak } = useSpeech()
     return (
-        <button
-            className="flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-800 hover:bg-blue-200"
-            onClick={() => speak(text, lang)}
-        >
-            <Volume2 className="w-4 h-4" /> {label}
-        </button>
+        <Button variant="outline" size="sm" onClick={() => speak(text, lang)}>
+            <Volume2 className="w-4 h-4 mr-2" /> {label}
+        </Button>
     )
 }
 
@@ -129,17 +131,18 @@ const STTBar = ({ expectedLang, onHeard }: any) => {
 
     return (
         <div className="flex items-center gap-3">
-            {!supported && <span className="text-sm text-gray-400">🎤 브라우저가 음성인식을 지원하지 않아요</span>}
+            {!supported && <span className="text-sm text-muted-foreground">🎤 Your browser does not support speech recognition.</span>}
             {supported && (
-                <button
-                    className={`flex items-center gap-1 rounded-full border px-3 py-1 text-sm font-semibold transition-all ${listening ? "bg-red-200 text-red-800" : "bg-pink-100 text-pink-800 hover:bg-pink-200"
-                        }`}
+                <Button
+                    variant={listening ? "destructive" : "outline"}
+                    size="sm"
                     onClick={() => (listening ? stop() : start(expectedLang))}
                 >
-                    {listening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />} {listening ? "멈춰요" : "말해요"}
-                </button>
+                    {listening ? <MicOff className="w-4 h-4 mr-2" /> : <Mic className="w-4 h-4 mr-2" />}
+                    {listening ? "Stop" : "Speak"}
+                </Button>
             )}
-            <span className="text-sm text-gray-600">{transcript}</span>
+            <span className="text-sm text-muted-foreground">{transcript}</span>
         </div>
     )
 }
@@ -168,48 +171,50 @@ export const FourChoiceQuiz = ({ items }: { items: QuizItem[] }) => {
     }
 
     return (
-        <div className="mx-auto max-w-xl bg-gradient-to-br from-yellow-50 to-pink-50 p-6 rounded-3xl shadow-lg border-2 border-yellow-200">
-            <div className="flex justify-between mb-4 items-center">
+        <div className="w-full max-w-4xl mx-auto">
+            <div className="flex justify-between mb-6 items-center">
                 <LevelBadge tag={item.level_tag} />
-                <div className="flex items-center gap-2 text-pink-600 font-bold">
-                    <Star className="w-5 h-5 fill-yellow-400 stroke-yellow-500" /> {score}
+                <div className="flex items-center gap-2 text-yellow-400 font-bold">
+                    <Star className="w-5 h-5 fill-yellow-400 stroke-yellow-600" /> {score}
                 </div>
             </div>
 
-            <motion.div className="mb-4 text-3xl font-bold text-center text-purple-800" initial={{ scale: 0.8 }} animate={{ scale: 1 }}>
+            <motion.div
+                key={item.qid}
+                className="mb-6 text-4xl font-bold text-center"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+            >
                 {item.prompt}
             </motion.div>
 
-            <div className="flex justify-center gap-3 mb-4">
-                <TTSButton text={item.tts_text_prompt} lang={item.tts_lang_prompt} label="문제 듣기" />
-                <TTSButton text={correctText} lang={item.tts_lang_answer} label="정답 듣기" />
+            <div className="flex justify-center gap-3 mb-6">
+                <TTSButton text={item.tts_text_prompt} lang={item.tts_lang_prompt} label="Prompt" />
+                <TTSButton text={correctText} lang={item.tts_lang_answer} label="Answer" />
             </div>
 
-            <div className="grid grid-cols-1 gap-3 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 {choices.map((c, i) => (
                     <ChoiceButton key={i} text={c} index={i} selectedIdx={selected} correctIdx={item.correct_index} onSelect={onSelect} />
                 ))}
             </div>
 
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-6">
                 <STTBar expectedLang={expectedLangForSTT} onHeard={setHeard} />
-                <button
-                    className="rounded-full bg-purple-200 text-purple-800 font-semibold px-4 py-2 hover:bg-purple-300 transition"
-                    onClick={next}
-                >
-                    다음 ▶
-                </button>
+                <Button onClick={next}>
+                    Next ▶
+                </Button>
             </div>
 
             {selected != null && (
                 <motion.div
-                    className="rounded-2xl border-2 border-dashed border-yellow-300 bg-white p-4 text-sm text-gray-700"
+                    className="rounded-lg border bg-card text-card-foreground p-4"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                 >
-                    <div className="font-bold mb-1 text-pink-700">피드백 🎉</div>
-                    <div>정답: <span className="font-mono text-green-700">{correctText}</span></div>
-                    <div>내가 말한 것: <span className="font-mono text-blue-700">{heard || "(미입력)"}</span></div>
+                    <div className="font-bold mb-2 text-primary">Feedback 🎉</div>
+                    <div>Answer: <span className="font-mono text-primary">{correctText}</span></div>
+                    <div>You said: <span className="font-mono text-blue-400">{heard || "(not recorded)"}</span></div>
                 </motion.div>
             )}
         </div>
