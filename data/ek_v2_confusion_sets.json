@@ -1,0 +1,83 @@
+{
+  "CG_P_B_V_F": [
+    "p",
+    "b",
+    "v",
+    "f",
+    "ph"
+  ],
+  "CG_T_D": [
+    "t",
+    "d"
+  ],
+  "CG_K_G_C": [
+    "k",
+    "g",
+    "c",
+    "ck",
+    "x_ks"
+  ],
+  "CG_S_Z": [
+    "s",
+    "z"
+  ],
+  "CG_S_SH_Z": [
+    "s",
+    "sh",
+    "z"
+  ],
+  "CG_CH_J": [
+    "ch",
+    "j"
+  ],
+  "CG_R_L": [
+    "r",
+    "l"
+  ],
+  "CG_M_N_NG": [
+    "m",
+    "n",
+    "ng"
+  ],
+  "CG_W_WH": [
+    "w",
+    "wh"
+  ],
+  "CG_TH_VL": [
+    "th_vl",
+    "s",
+    "f"
+  ],
+  "CG_TH_VD": [
+    "th_vd",
+    "d",
+    "z"
+  ],
+  "CG_QU_KW": [
+    "qu",
+    "kw"
+  ],
+  "CG_X_KS": [
+    "x_ks",
+    "k",
+    "ks"
+  ],
+  "CG_SILENT_E": [
+    "a_e",
+    "i_e",
+    "o_e",
+    "u_e",
+    "e_e"
+  ],
+  "CG_VOWEL_TEAMS": [
+    "ai",
+    "ay",
+    "ee",
+    "ea",
+    "oa",
+    "ow",
+    "ue",
+    "ui",
+    "oo"
+  ]
+}
